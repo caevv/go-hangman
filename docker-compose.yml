@@ -1,0 +1,7 @@
+version: '2.1'
+services:
+  app:
+    build: .
+    volumes:
+      - $PWD:/go/src/go-hangman-api
+    working_dir: /go/src/go-hangman-api

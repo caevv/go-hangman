@@ -2,8 +2,8 @@
 
 ## Testing
 
-- go get github.com/DATA-DOG/godog/cmd/godog
-- run `godog` on project root folder
+- run `make test`.
+- BDD tests were created with Godog. 
 
 
 ```gherkin
