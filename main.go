@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"path"
 	"strconv"
+
+	"go-hangman-api/entity"
 )
 
 func main() {
@@ -26,7 +28,7 @@ func Guess(response http.ResponseWriter, r *http.Request) {
 	var bodyArray map[string]interface{}
 	json.Unmarshal(body, &bodyArray)
 
-	hangman, _ := Find(id)
+	hangman, _ := entity.Find(id)
 
 	hangman, index := hangman.Guess(bodyArray["letter"].(string))
 
@@ -43,7 +45,7 @@ func GetGames(response http.ResponseWriter, request *http.Request) {
 }
 
 func CreateGame(w http.ResponseWriter, request *http.Request) {
-	hangman := Hangman{
+	hangman := entity.Hangman{
 		ID:        1,
 		Word:      "cryptocurrency",
 		Length:    14,
@@ -52,7 +54,7 @@ func CreateGame(w http.ResponseWriter, request *http.Request) {
 		Status:    "ongoing",
 	}
 
-	Store(hangman)
+	entity.Store(hangman)
 
 	respondWithJSON(w, http.StatusCreated, map[string]int{"id": hangman.ID, "guesses": hangman.Guesses, "length": hangman.Length})
 }

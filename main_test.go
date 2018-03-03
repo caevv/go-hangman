@@ -7,30 +7,9 @@ import (
 	"github.com/DATA-DOG/godog"
 	"net/http"
 	"net/http/httptest"
-	"os"
-	"testing"
+
+	"go-hangman-api/entity"
 )
-
-func TestMain(m *testing.M) {
-	format := "progress"
-	for _, arg := range os.Args[1:] {
-		if arg == "-test.v=true" { // go test transforms -v option
-			format = "pretty"
-			break
-		}
-	}
-	status := godog.RunWithOptions("godog", func(s *godog.Suite) {
-		godog.SuiteContext(s)
-	}, godog.Options{
-		Format: format,
-		Paths:  []string{"features"},
-	})
-
-	if st := m.Run(); st > status {
-		status = st
-	}
-	os.Exit(status)
-}
 
 type apiFeature struct {
 	resp *httptest.ResponseRecorder
@@ -60,7 +39,7 @@ func (a *apiFeature) thereShouldBeAGameWithWordWithRemainingGuesses(word string,
 	var r hangmanResponse
 	json.Unmarshal(a.resp.Body.Bytes(), &r)
 
-	hanghman, err := Find(r.ID)
+	hanghman, err := entity.Find(r.ID)
 
 	if err != nil {
 		return err
@@ -108,14 +87,14 @@ func (a *apiFeature) iShouldBeToldThatTheWordHaveLettersAndRemainingGuessesWitAn
 }
 
 func (a *apiFeature) thereIsAGameStartedWithWordWithRemainingGuessesWithLetters(word string, guesses int, length int) error {
-	hangmam := Hangman{
+	hangmam := entity.Hangman{
 		ID:      1,
 		Word:    word,
 		Length:  length,
 		Guesses: guesses,
 	}
 
-	Store(hangmam)
+	entity.Store(hangmam)
 
 	return nil
 }
