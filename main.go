@@ -1,9 +1,13 @@
 package main
 
 import (
+	"encoding/json"
+	"github.com/gorilla/mux"
+	"io/ioutil"
 	"log"
 	"net/http"
-	"github.com/gorilla/mux"
+	"path"
+	"strconv"
 )
 
 func main() {
@@ -14,15 +18,49 @@ func main() {
 	router.HandleFunc("/hangman/{id}/guess", Guess).Methods("POST")
 	log.Fatal(http.ListenAndServe(":8000", router))
 }
-func Guess(writer http.ResponseWriter, request *http.Request) {
+
+func Guess(response http.ResponseWriter, r *http.Request) {
+	id, _ := strconv.Atoi(path.Base(r.URL.Path))
+
+	body, _ := ioutil.ReadAll(r.Body)
+	var bodyArray map[string]interface{}
+	json.Unmarshal(body, &bodyArray)
+
+	hangman, _ := Find(id)
+
+	hangman, index := hangman.Guess(bodyArray["letter"].(string))
+
+	respondWithJSON(response, 200, map[string]interface{}{
+		"id": hangman.ID, "guesses": hangman.Guesses, "length": hangman.Length, "index": index, "status": hangman.Status,
+	})
+}
+
+func GetGame(response http.ResponseWriter, request *http.Request) {
 	//TODO
 }
-func GetGame(writer http.ResponseWriter, request *http.Request) {
+func GetGames(response http.ResponseWriter, request *http.Request) {
 	//TODO
 }
-func GetGames(writer http.ResponseWriter, request *http.Request) {
-	//TODO
+
+func CreateGame(w http.ResponseWriter, request *http.Request) {
+	hangman := Hangman{
+		ID:        1,
+		Word:      "cryptocurrency",
+		Length:    14,
+		Guesses:   5,
+		Remaining: 14,
+		Status:    "ongoing",
+	}
+
+	Store(hangman)
+
+	respondWithJSON(w, http.StatusCreated, map[string]int{"id": hangman.ID, "guesses": hangman.Guesses, "length": hangman.Length})
 }
-func CreateGame(writer http.ResponseWriter, request *http.Request) {
-	//TODO
+
+func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
+	response, _ := json.Marshal(payload)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+	w.Write(response)
 }
