@@ -149,6 +149,30 @@ func (a *apiFeature) thatIHaveOtherAttempts(guesses int) error {
 	return nil
 }
 
+func (a *apiFeature) theIHaveTriedLetter(letter string) error {
+	type hangmanResponse struct {
+		Letters []string `json:"letters"`
+	}
+
+	var hangman hangmanResponse
+
+	json.Unmarshal(a.resp.Body.Bytes(), &hangman)
+
+	found := false
+	for _, value := range hangman.Letters {
+		if letter == value {
+			found = true
+		}
+	}
+
+
+	if !found {
+		return fmt.Errorf("expected letter %s to be found, but it was not", letter)
+	}
+
+	return nil
+}
+
 func (a *apiFeature) iShouldBeToldTheLetterIsAvailableOnPositionsAnd(index1, index2, index3 int) error {
 	if a.resp.Code != 200 {
 		return fmt.Errorf("expected response code to be: %d, but actual is: %#v", 200, a.resp.Code)
@@ -261,6 +285,7 @@ func FeatureContext(s *godog.Suite) {
 	s.Step(`^there should be a game with word "([^"]*)" with "([^"]*)" remaining guesses$`, api.thereShouldBeAGameWithWordWithRemainingGuesses)
 	s.Step(`^I should be told that the word have "([^"]*)" letters and "([^"]*)" remaining guesses wit an ID$`, api.iShouldBeToldThatTheWordHaveLettersAndRemainingGuessesWitAnID)
 	s.Step(`^there is a game started with word "([^"]*)" with "([^"]*)" remaining guesses with "([^"]*)" letters$`, api.thereIsAGameStartedWithWordWithRemainingGuessesWithLetters)
+	s.Step(`^the I have tried letter "([^"]*)"$`, api.theIHaveTriedLetter)
 	s.Step(`^I guess a guess the letter "([^"]*)"$`, api.iGuessAGuessTheLetter)
 	s.Step(`^I should be told the letter is wrong$`, api.iShouldBeToldTheLetterIsWrong)
 	s.Step(`^that I have other "([^"]*)" attempts$`, api.thatIHaveOtherAttempts)

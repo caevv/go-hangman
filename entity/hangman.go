@@ -6,15 +6,19 @@ import (
 )
 
 type Hangman struct {
-	ID        int    `json:"id"`
-	Word      string `json:"word"`
-	Length    int    `json:"letters"`
-	Remaining int    `json:"letters"`
-	Guesses   int    `json:"guesses"`
-	Status    string `json:"status"`
+	ID        int      `json:"id"`
+	Word      string   `json:"word"`
+	Length    int      `json:"letters"`
+	Remaining int      `json:"remaining"` // remaining letters
+	Guesses   int      `json:"guesses"`	  // remaining guesses
+	Status    string   `json:"status"`
+	Letters   []string `json:"letters"`
 }
 
 func (h Hangman) Guess(letter string) (Hangman, []int) {
+	h.Letters = append(h.Letters, letter)
+
+	// search letter on the word
 	wordSlice := strings.Split(h.Word, "")
 
 	var index []int
@@ -31,15 +35,15 @@ func (h Hangman) Guess(letter string) (Hangman, []int) {
 
 	h.Remaining -= found
 
-	contain := strings.Contains(h.Word, letter)
-
-	if !contain {
+	if found == 0 {
 		h.Guesses -= 1
 	}
 
-	if !contain && h.Guesses == 0 {
+	if found == 0 && h.Guesses == 0 {
 		h.Status = "lost"
 	}
+
+	update(h)
 
 	return h, index
 }
@@ -58,4 +62,12 @@ func Find(id int) (Hangman, error) {
 	}
 
 	return Hangman{}, fmt.Errorf("game id: %v not found", id)
+}
+
+func update(h Hangman) {
+	for i, hangman := range games {
+		if hangman.ID == h.ID {
+			games[i] = h
+		}
+	}
 }

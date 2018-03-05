@@ -33,15 +33,13 @@ func Guess(response http.ResponseWriter, r *http.Request) {
 	hangman, index := hangman.Guess(bodyArray["letter"].(string))
 
 	respondWithJSON(response, 200, map[string]interface{}{
-		"id": hangman.ID, "guesses": hangman.Guesses, "length": hangman.Length, "index": index, "status": hangman.Status,
+		"id": hangman.ID,
+		"guesses": hangman.Guesses,
+		"length": hangman.Length,
+		"index": index,
+		"status": hangman.Status,
+		"letters": hangman.Letters,
 	})
-}
-
-func GetGame(response http.ResponseWriter, request *http.Request) {
-	//TODO
-}
-func GetGames(response http.ResponseWriter, request *http.Request) {
-	//TODO
 }
 
 func CreateGame(w http.ResponseWriter, request *http.Request) {
@@ -57,6 +55,13 @@ func CreateGame(w http.ResponseWriter, request *http.Request) {
 	entity.Store(hangman)
 
 	respondWithJSON(w, http.StatusCreated, map[string]int{"id": hangman.ID, "guesses": hangman.Guesses, "length": hangman.Length})
+}
+
+func GetGame(response http.ResponseWriter, request *http.Request) {
+	//TODO
+}
+func GetGames(response http.ResponseWriter, request *http.Request) {
+	//TODO
 }
 
 func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {

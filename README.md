@@ -39,8 +39,7 @@ Feature: Play Hangman
 
 ### TODO:
 - Move some logics from main to handler, so they would have just struct as parameter.
-- Store letters already attempted.
-- Check if won.
+- Create won scenario.
 - List games.
 - Get a game status.
 - Fail gracefully.

@@ -16,12 +16,14 @@ Feature: Play Hangman
     When I guess a guess the letter "z"
     Then I should be told the letter is wrong
     And that I have other "4" attempts
+    And the I have tried letter "z"
 
   Scenario: Correct guess
     Given there is a game started with word "cryptocurrency" with "5" remaining guesses with "14" letters
     When I guess a guess the letter "c"
     Then I should be told the letter is available on positions "1", "7" and "13"
     And that I have other "5" attempts
+    And the I have tried letter "c"
 
   Scenario: Lost Game
     Given there is a game started with word "cryptocurrency" with "1" remaining guesses with "14" letters
