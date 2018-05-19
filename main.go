@@ -22,13 +22,22 @@ func main() {
 }
 
 func Guess(response http.ResponseWriter, r *http.Request) {
-	id, _ := strconv.Atoi(path.Base(r.URL.Path))
+	id, err := strconv.Atoi(path.Base(r.URL.Path))
+	if err != nil {
+		panic(err)
+	}
 
-	body, _ := ioutil.ReadAll(r.Body)
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		panic(err)
+	}
 	var bodyArray map[string]interface{}
 	json.Unmarshal(body, &bodyArray)
 
-	hangman, _ := entity.Find(id)
+	hangman, err := entity.Find(id)
+	if err != nil {
+		panic(err)
+	}
 
 	hangman, index := hangman.Guess(bodyArray["letter"].(string))
 
@@ -65,7 +74,10 @@ func GetGames(response http.ResponseWriter, request *http.Request) {
 }
 
 func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
-	response, _ := json.Marshal(payload)
+	response, err := json.Marshal(payload)
+	if err != nil {
+		panic(err)
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
